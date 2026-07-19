@@ -414,10 +414,13 @@ function updateMapGateStatuses(gates) {
   });
 }
 
-function loadMapData() {
-  // If we already have crowd data, use it to color the gates
-  if (lastCrowdData) updateMapGateStatuses(lastCrowdData);
+async function loadMapData() {
   mapLoaded = true;
+  if (!lastCrowdData) {
+    await loadCrowdInsight();
+  } else {
+    updateMapGateStatuses(lastCrowdData);
+  }
 }
 
 // ============================================================
