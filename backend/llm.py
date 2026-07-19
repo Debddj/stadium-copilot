@@ -9,12 +9,17 @@ directly. Swap providers with one env var — no other code changes.
 
 import os
 import json
+import urllib.error
 import urllib.request
 
 PROVIDER = os.getenv("LLM_PROVIDER", "gemini").lower()
 
 
 class LLMError(Exception):
+    pass
+
+
+class LLMRateLimitError(LLMError):
     pass
 
 
@@ -68,15 +73,17 @@ def _generate_gemini(system_prompt: str, user_prompt: str) -> str:
                 
             return parts[0].get("text", "").strip()
             
+    except urllib.error.HTTPError as e:
+        if e.code == 429:
+            raise LLMRateLimitError("High demand — try again in a few seconds.")
+        try:
+            error_details = e.read().decode("utf-8")
+            error_json = json.loads(error_details)
+            error_msg = error_json.get("error", {}).get("message", error_details)
+            raise LLMError(f"Gemini API error: {error_msg}")
+        except json.JSONDecodeError:
+            raise LLMError(f"Gemini API call failed with response code {e.code}")
     except Exception as e:
-        if hasattr(e, "read"):
-            try:
-                error_details = e.read().decode("utf-8")
-                error_json = json.loads(error_details)
-                error_msg = error_json.get("error", {}).get("message", error_details)
-                raise LLMError(f"Gemini API error: {error_msg}")
-            except Exception:
-                raise LLMError(f"Gemini API call failed with response code {e.code}")
         raise LLMError(f"Gemini connection failed: {e}")
 
 

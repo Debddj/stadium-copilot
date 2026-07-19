@@ -94,10 +94,11 @@ STADIUM CONTEXT:
 
 
 def volunteer_system_prompt(role: str, zone: str) -> str:
+    role_name = role.replace("-", " ").title()
     return f"""You are Stadium Copilot Staff Assistant, an AI operations assistant for volunteers
 and venue staff at {mock_data.STADIUM_NAME} during the FIFA World Cup 2026.
 
-The person asking is a **{role}** assigned to **{zone}**.
+The person asking is a **{role_name}** assigned to **{zone}**.
 
 Your job is to:
 1. Answer questions about their specific duties and responsibilities based on their role.
@@ -121,6 +122,11 @@ STADIUM CONTEXT:
 """
 
 
+def raise_llm_http_error(e: llm.LLMError):
+    status_code = 429 if isinstance(e, llm.LLMRateLimitError) else 500
+    raise HTTPException(status_code=status_code, detail=str(e))
+
+
 # ---------- routes ----------
 
 @app.post("/api/chat")
@@ -128,7 +134,7 @@ def chat(req: ChatRequest):
     try:
         reply = llm.generate(chat_system_prompt(req.language), req.message)
     except llm.LLMError as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise_llm_http_error(e)
     return {"reply": reply}
 
 
@@ -139,7 +145,7 @@ def volunteer_chat(req: VolunteerChatRequest):
             volunteer_system_prompt(req.role, req.zone), req.message
         )
     except llm.LLMError as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise_llm_http_error(e)
     return {"reply": reply}
 
 
@@ -153,7 +159,7 @@ def crowd_insight():
     try:
         advisory = llm.generate(CROWD_SYSTEM_PROMPT, data_summary)
     except llm.LLMError as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise_llm_http_error(e)
     return {"gates": snapshot, "advisory": advisory}
 
 
@@ -164,7 +170,7 @@ def simplify(req: SimplifyRequest):
             ACCESSIBILITY_SYSTEM_PROMPT.format(language=req.language), req.text
         )
     except llm.LLMError as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise_llm_http_error(e)
     return {"simplified": reply}
 
 
@@ -178,7 +184,7 @@ def sustainability_tip(req: SustainabilityRequest):
     try:
         reply = llm.generate(SUSTAINABILITY_SYSTEM_PROMPT, prompt)
     except llm.LLMError as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise_llm_http_error(e)
     return {"tip": reply}
 
 
@@ -186,7 +192,7 @@ def sustainability_tip(req: SustainabilityRequest):
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "venue": mock_data.STADIUM_NAME}
+    return {"status": "ok", "venue": mock_data.STADIUM_NAME, "provider": llm.PROVIDER}
 
 
 # ---------- serve frontend (static, no build step) ----------

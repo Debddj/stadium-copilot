@@ -5,6 +5,26 @@
 
 const API = ""; // same-origin
 
+function providerName(provider) {
+  if (!provider) return "Gemini";
+  return provider.charAt(0).toUpperCase() + provider.slice(1);
+}
+
+async function loadHealthBadge() {
+  const badge = document.getElementById("provider-badge");
+  if (!badge) return;
+
+  try {
+    const res = await fetch(`${API}/api/health`);
+    const data = await res.json();
+    if (res.ok) {
+      badge.textContent = `⚡ Live · Powered by ${providerName(data.provider)}`;
+    }
+  } catch (err) {
+    badge.textContent = "⚡ Live · GenAI ready";
+  }
+}
+
 // ============================================================
 // TAB SWITCHING
 // ============================================================
@@ -78,7 +98,7 @@ function addMessage(chatEl, role, text, isTyping = false) {
   const textNode = document.createElement("span");
   if (isTyping) {
     textNode.className = "typing-dots";
-    textNode.textContent = "Thinking";
+    textNode.setAttribute("aria-label", "Stadium Copilot is typing");
   } else {
     textNode.textContent = text;
   }
@@ -271,6 +291,8 @@ accessSpeak.addEventListener("click", () => {
   const langMap = {
     "English": "en-US", "Spanish": "es-ES", "French": "fr-FR",
     "Portuguese": "pt-BR", "Hindi": "hi-IN", "Arabic": "ar-SA",
+    "Japanese": "ja-JP", "Mandarin Chinese": "zh-CN", "German": "de-DE",
+    "Korean": "ko-KR", "Italian": "it-IT", "Russian": "ru-RU"
   };
   utter.lang = langMap[accessLang.value] || "en-US";
 
@@ -438,7 +460,8 @@ async function askVolunteerCopilot(message) {
   const placeholder = addMessage(volChatLog, "bot", "", true);
 
   // Augment the message with the selected role and zone context
-  const augmentedMessage = `[Context: I am a ${volRole.value} assigned to ${volZone.value}]\n\n${message}`;
+  const roleLabel = volRole.options[volRole.selectedIndex].text;
+  const augmentedMessage = `[Context: My role is ${roleLabel}; assigned to ${volZone.value}]\n\n${message}`;
 
   try {
     const res = await fetch(`${API}/api/volunteer-chat`, {
@@ -477,3 +500,4 @@ document.querySelectorAll(".vol-chip").forEach((chip) => {
 
 addMessage(chatLog, "bot", "Hi! 👋 I'm Stadium Copilot — your AI assistant for today's match at MetLife Stadium. Ask me about gates, transit, accessibility, food, or anything else!");
 addMessage(volChatLog, "bot", "Welcome, team! 💪 I'm your Staff Assistant. Select your role and zone above, then ask me anything about your duties, protocols, or stadium operations.");
+loadHealthBadge();
