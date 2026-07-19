@@ -1,5 +1,11 @@
 import os
+import sys
 import pathlib
+
+# Add the backend directory to sys.path to ensure Vercel can resolve mock_data and llm imports
+current_dir = str(pathlib.Path(__file__).resolve().parent)
+if current_dir not in sys.path:
+    sys.path.append(current_dir)
 
 from dotenv import load_dotenv
 load_dotenv()
