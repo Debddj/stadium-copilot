@@ -198,4 +198,5 @@ def health():
 # ---------- serve frontend (static, no build step) ----------
 
 FRONTEND_DIR = pathlib.Path(__file__).resolve().parent.parent / "frontend"
-app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
+if FRONTEND_DIR.exists():
+    app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
