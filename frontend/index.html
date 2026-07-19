@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Stadium Copilot — FIFA World Cup 2026</title>
+<meta name="description" content="GenAI-powered stadium operations assistant for FIFA World Cup 2026. Navigation, crowd intelligence, accessibility, sustainability, and more." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar__brand">
+    <div class="topbar__mark" aria-hidden="true">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+    </div>
+    <div>
+      <h1>Stadium Copilot</h1>
+      <p>MetLife Stadium · FIFA World Cup 2026</p>
+    </div>
+  </div>
+  <div class="topbar__match" id="match-ticker">
+    <div class="match-info">
+      <span class="match-teams" id="match-teams">🇧🇷 Brazil vs Argentina 🇦🇷</span>
+      <span class="match-status"><span class="dot"></span><span id="match-time">Live — 34'</span></span>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Copilot features">
+  <button class="tab is-active" data-tab="assistant" role="tab" aria-selected="true">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Ask Copilot
+  </button>
+  <button class="tab" data-tab="crowd" role="tab" aria-selected="false">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    Crowd Intel
+  </button>
+  <button class="tab" data-tab="accessibility" role="tab" aria-selected="false">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8m-4-4h8"/></svg>
+    Accessibility
+  </button>
+  <button class="tab" data-tab="sustainability" role="tab" aria-selected="false">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    Getting There
+  </button>
+  <button class="tab" data-tab="map" role="tab" aria-selected="false">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+    Stadium Map
+  </button>
+  <button class="tab" data-tab="volunteer" role="tab" aria-selected="false">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    Volunteers
+  </button>
+</nav>
+
+<main class="panels">
+
+  <!-- ASSISTANT -->
+  <section class="panel is-active" id="panel-assistant">
+    <div class="panel__intro">
+      <h2>Ask anything about today's match</h2>
+      <p>Gates, transit, accessibility, rules — answered in your language, grounded in this stadium's real setup.</p>
+    </div>
+
+    <div class="assistant">
+      <div class="assistant__controls">
+        <label for="chat-lang">Reply in</label>
+        <select id="chat-lang">
+          <option>English</option>
+          <option>Spanish</option>
+          <option>French</option>
+          <option>Portuguese</option>
+          <option>Hindi</option>
+          <option>Arabic</option>
+          <option>Japanese</option>
+          <option>Mandarin Chinese</option>
+          <option>German</option>
+          <option>Korean</option>
+          <option>Italian</option>
+          <option>Russian</option>
+        </select>
+      </div>
+
+      <div class="chips">
+        <button class="chip" data-q="Where is Gate C and what's near it?">📍 Where is Gate C?</button>
+        <button class="chip" data-q="What's the fastest way to reach the stadium by public transit?">🚆 Fastest transit route</button>
+        <button class="chip" data-q="Is there a quiet or sensory-friendly space in the stadium?">🧘 Sensory-friendly space?</button>
+        <button class="chip" data-q="What's the quickest way out of the stadium after the match?">🚪 Fastest exit after match</button>
+        <button class="chip" data-q="Where can I find halal or vegetarian food options?">🍔 Food options</button>
+        <button class="chip" data-q="Are there any prohibited items I cannot bring into the stadium?">🚫 Prohibited items</button>
+      </div>
+
+      <div class="chat" id="chat-log" aria-live="polite"></div>
+
+      <form class="chat__input" id="chat-form">
+        <input id="chat-text" type="text" placeholder="Ask Stadium Copilot…" autocomplete="off" required />
+        <button type="submit" id="chat-submit-btn" aria-label="Submit message">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- CROWD INTELLIGENCE -->
+  <section class="panel" id="panel-crowd">
+    <div class="panel__intro">
+      <h2>Gate Pulse — Live Crowd Intelligence</h2>
+      <p>Real-time occupancy per gate, with an AI operations advisory generated from the data below.</p>
+      <div class="intro-actions">
+        <button class="btn-action" id="crowd-refresh">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          Refresh live data
+        </button>
+        <span class="last-updated" id="crowd-updated"></span>
+      </div>
+    </div>
+
+    <div class="crowd-grid">
+      <div class="pulse-section">
+        <div class="pulse" id="pulse-bars"></div>
+        <div class="crowd-summary" id="crowd-summary">
+          <div class="stat-card">
+            <span class="stat-value" id="stat-total">—</span>
+            <span class="stat-label">Total Occupancy</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="stat-busiest">—</span>
+            <span class="stat-label">Busiest Gate</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" id="stat-quietest">—</span>
+            <span class="stat-label">Quietest Gate</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="advisory">
+        <div class="advisory__header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <h3>AI Operations Advisory</h3>
+        </div>
+        <p id="advisory-text" class="advisory__text">Click "Refresh live data" to generate an advisory…</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ACCESSIBILITY -->
+  <section class="panel" id="panel-accessibility">
+    <div class="panel__intro">
+      <h2>Plain-Language Rewrite</h2>
+      <p>Paste any stadium instruction and get a simplified, easy-to-follow version — with optional read-aloud. Designed for neurodivergent fans, non-native speakers, and fans who benefit from plain language.</p>
+    </div>
+
+    <div class="access">
+      <div class="access__samples">
+        <span class="access__samples-label">Try a sample:</span>
+        <button class="chip chip--sm" data-sample="In the event of an emergency evacuation, patrons are advised to proceed in an orderly fashion to their nearest designated egress point, disregarding the route of ingress, and to await further instruction from stadium personnel stationed at each concourse.">Emergency announcement</button>
+        <button class="chip chip--sm" data-sample="Patrons utilizing assisted listening devices may collect them from the Guest Services kiosk located proximate to Gate B. A valid government-issued photographic identification document and a refundable deposit of $25 USD are requisite for device issuance.">Listening device info</button>
+        <button class="chip chip--sm" data-sample="Re-entry to the stadium premises subsequent to egress is strictly prohibited. All attendees are advised to ensure they are in possession of all personal belongings prior to vacating their assigned seating areas.">Re-entry policy</button>
+      </div>
+
+      <textarea id="access-input" rows="4" placeholder="Paste stadium text here, e.g. an announcement or sign copy…">In the event of an emergency evacuation, patrons are advised to proceed in an orderly fashion to their nearest designated egress point, disregarding the route of ingress, and to await further instruction from stadium personnel stationed at each concourse.</textarea>
+
+      <div class="access__controls">
+        <div class="access__controls-left">
+          <label for="access-lang">Language</label>
+          <select id="access-lang">
+            <option>English</option>
+            <option>Spanish</option>
+            <option>French</option>
+            <option>Portuguese</option>
+            <option>Hindi</option>
+            <option>Arabic</option>
+          </select>
+        </div>
+        <button id="access-submit" class="btn-action btn-action--primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Simplify
+        </button>
+      </div>
+
+      <div class="access__result" id="access-result" hidden>
+        <div class="access__result-header">
+          <h3>✅ Simplified version</h3>
+          <button id="access-speak" type="button" class="btn-action btn-action--secondary">🔊 Read aloud</button>
+        </div>
+        <p id="access-output"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUSTAINABILITY / TRANSPORT -->
+  <section class="panel" id="panel-sustainability">
+    <div class="panel__intro">
+      <h2>Getting There, Sustainably</h2>
+      <p>Tell Copilot where you're coming from — get the lowest-carbon practical route to MetLife Stadium using actual transit options.</p>
+    </div>
+
+    <div class="sustain-cards">
+      <div class="transit-quick-info">
+        <div class="transit-card">
+          <div class="transit-icon">🚆</div>
+          <div class="transit-detail">
+            <strong>NJ Transit Rail</strong>
+            <span>Direct from Secaucus Jct, ~9 min</span>
+          </div>
+        </div>
+        <div class="transit-card">
+          <div class="transit-icon">🚌</div>
+          <div class="transit-detail">
+            <strong>Coach USA Shuttle</strong>
+            <span>From Port Authority, Manhattan</span>
+          </div>
+        </div>
+        <div class="transit-card">
+          <div class="transit-icon">🚗</div>
+          <div class="transit-detail">
+            <strong>Rideshare Drop-off</strong>
+            <span>Lot F, 10 min walk to Gate C</span>
+          </div>
+        </div>
+        <div class="transit-card">
+          <div class="transit-icon">🚲</div>
+          <div class="transit-detail">
+            <strong>Bike Valet</strong>
+            <span>Free at Gate D, first-come</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <form class="sustain" id="sustain-form">
+      <div class="sustain__row">
+        <div>
+          <label for="sustain-origin">Coming from</label>
+          <input id="sustain-origin" type="text" placeholder="e.g. Midtown Manhattan, Newark Airport, Hoboken" required />
+        </div>
+        <div>
+          <label for="sustain-mode">Preference</label>
+          <select id="sustain-mode">
+            <option value="any">No preference</option>
+            <option value="public transit">Public transit</option>
+            <option value="bike">Bike</option>
+            <option value="rideshare">Rideshare</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn-action btn-action--primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Get sustainable route
+      </button>
+    </form>
+
+    <div class="sustain__result" id="sustain-result" hidden>
+      <h3>🌱 Copilot recommends</h3>
+      <p id="sustain-output"></p>
+    </div>
+  </section>
+
+  <!-- STADIUM MAP -->
+  <section class="panel" id="panel-map">
+    <div class="panel__intro">
+      <h2>Interactive Stadium Map</h2>
+      <p>Tap any gate to see live occupancy, services, and AI-powered recommendations.</p>
+    </div>
+
+    <div class="map-container">
+      <svg viewBox="0 0 600 400" class="stadium-svg" id="stadium-map" aria-label="MetLife Stadium map showing gates A through E">
+        <!-- Stadium oval -->
+        <ellipse cx="300" cy="200" rx="250" ry="150" fill="none" stroke="var(--line)" stroke-width="2" opacity="0.5"/>
+        <ellipse cx="300" cy="200" rx="220" ry="125" fill="var(--panel)" stroke="var(--line)" stroke-width="1.5"/>
+        <!-- Field -->
+        <rect x="200" y="140" width="200" height="120" rx="8" fill="var(--turf)" opacity="0.15" stroke="var(--turf)" stroke-width="1"/>
+        <line x1="300" y1="140" x2="300" y2="260" stroke="var(--turf)" stroke-width="0.5" opacity="0.4"/>
+        <circle cx="300" cy="200" r="25" fill="none" stroke="var(--turf)" stroke-width="0.5" opacity="0.4"/>
+        <!-- Gate markers -->
+        <g class="gate-marker" data-gate="A" role="button" tabindex="0" aria-label="Gate A - North Plaza">
+          <circle cx="300" cy="48" r="22" class="gate-circle"/>
+          <text x="300" y="44" text-anchor="middle" class="gate-letter">A</text>
+          <text x="300" y="58" text-anchor="middle" class="gate-sublabel">North</text>
+        </g>
+        <g class="gate-marker" data-gate="B" role="button" tabindex="0" aria-label="Gate B - East Concourse">
+          <circle cx="520" cy="145" r="22" class="gate-circle"/>
+          <text x="520" y="141" text-anchor="middle" class="gate-letter">B</text>
+          <text x="520" y="155" text-anchor="middle" class="gate-sublabel">East</text>
+        </g>
+        <g class="gate-marker" data-gate="C" role="button" tabindex="0" aria-label="Gate C - South Plaza">
+          <circle cx="300" cy="352" r="22" class="gate-circle"/>
+          <text x="300" y="348" text-anchor="middle" class="gate-letter">C</text>
+          <text x="300" y="362" text-anchor="middle" class="gate-sublabel">South</text>
+        </g>
+        <g class="gate-marker" data-gate="D" role="button" tabindex="0" aria-label="Gate D - West Concourse">
+          <circle cx="80" cy="145" r="22" class="gate-circle"/>
+          <text x="80" y="141" text-anchor="middle" class="gate-letter">D</text>
+          <text x="80" y="155" text-anchor="middle" class="gate-sublabel">West</text>
+        </g>
+        <g class="gate-marker" data-gate="E" role="button" tabindex="0" aria-label="Gate E - Media/VIP">
+          <circle cx="520" cy="280" r="22" class="gate-circle"/>
+          <text x="520" y="276" text-anchor="middle" class="gate-letter">E</text>
+          <text x="520" y="290" text-anchor="middle" class="gate-sublabel">VIP</text>
+        </g>
+        <!-- Labels inside field -->
+        <text x="300" y="195" text-anchor="middle" class="field-label">MetLife Stadium</text>
+        <text x="300" y="212" text-anchor="middle" class="field-sublabel">82,500 capacity</text>
+      </svg>
+
+      <div class="map-info" id="map-info">
+        <p class="map-info__hint">👆 Tap a gate on the map to see details</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- VOLUNTEER COORDINATION -->
+  <section class="panel" id="panel-volunteer">
+    <div class="panel__intro">
+      <h2>Volunteer & Staff Assistant</h2>
+      <p>AI-powered coordination for volunteers and venue staff. Get instant answers about your duties, protocols, and real-time situational updates.</p>
+    </div>
+
+    <div class="volunteer">
+      <div class="volunteer__role-select">
+        <label for="vol-role">I am a</label>
+        <select id="vol-role">
+          <option value="volunteer">Volunteer</option>
+          <option value="security">Security Staff</option>
+          <option value="medical">Medical Team</option>
+          <option value="concessions">Concessions Staff</option>
+          <option value="guest-services">Guest Services</option>
+        </select>
+        <label for="vol-zone">Assigned to</label>
+        <select id="vol-zone">
+          <option value="Gate A">Gate A — North Plaza</option>
+          <option value="Gate B">Gate B — East Concourse</option>
+          <option value="Gate C">Gate C — South Plaza</option>
+          <option value="Gate D">Gate D — West Concourse</option>
+          <option value="Gate E">Gate E — Media/VIP</option>
+          <option value="Concourse">General Concourse</option>
+        </select>
+      </div>
+
+      <div class="chips">
+        <button class="chip vol-chip" data-q="What are my key duties and responsibilities for today's match?">📋 My duties today</button>
+        <button class="chip vol-chip" data-q="A fan is asking for help in a language I don't speak. What should I do?">🌍 Language barrier help</button>
+        <button class="chip vol-chip" data-q="What is the emergency evacuation procedure for my assigned zone?">🚨 Emergency protocol</button>
+        <button class="chip vol-chip" data-q="A fan has a medical issue. What are the steps I should follow?">🏥 Medical emergency steps</button>
+        <button class="chip vol-chip" data-q="Where are the nearest restrooms, water stations, and first aid from my zone?">📍 Nearby facilities</button>
+      </div>
+
+      <div class="chat" id="vol-chat-log" aria-live="polite"></div>
+
+      <form class="chat__input" id="vol-chat-form">
+        <input id="vol-chat-text" type="text" placeholder="Ask about your duties, protocols, or stadium info…" autocomplete="off" required />
+        <button type="submit" aria-label="Submit volunteer question">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="foot__badges">
+    <span class="badge">🤖 GenAI Powered</span>
+    <span class="badge">♿ Accessible</span>
+    <span class="badge">🌍 12 Languages</span>
+    <span class="badge">🌱 Sustainability-First</span>
+  </div>
+  <p>Built for the FIFA World Cup 2026 Hackathon · Demo data only · Not affiliated with FIFA.</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
