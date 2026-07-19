@@ -1,6 +1,14 @@
 # Stadium Copilot 🏟️
 ### A GenAI operations layer for fans, staff, and organizers — FIFA World Cup 2026
 
+🚀 **Live Vercel Deployment**: [stadium-copilot-ruby.vercel.app](https://stadium-copilot-ruby.vercel.app/)
+
+> [!NOTE]
+> The app is fully deployed to **Vercel** as a hybrid serverless application:
+> - The frontend HTML/JS/CSS assets are served instantly via Vercel's global Edge CDN.
+> - The FastAPI Python backend is routed to Vercel Serverless Functions.
+> - Powered by Google **Gemini 3.5 Flash** with reasoning tokens enabled and direct REST integration.
+
 ---
 
 ## The Idea
