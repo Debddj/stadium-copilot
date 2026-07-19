@@ -47,7 +47,7 @@ def _generate_gemini(system_prompt: str, user_prompt: str) -> str:
         },
         "generationConfig": {
             "temperature": 0.4,
-            "maxOutputTokens": 500
+            "maxOutputTokens": 2048
         }
     }
 
