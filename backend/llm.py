@@ -88,7 +88,10 @@ def _generate_gemini(system_prompt: str, user_prompt: str) -> str:
 
 
 def _generate_openai(system_prompt: str, user_prompt: str) -> str:
-    from openai import OpenAI
+    try:
+        from openai import OpenAI  # type: ignore
+    except ImportError:
+        raise LLMError("The 'openai' package is not installed in your Python environment. Install it with 'pip install openai'.")
 
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key or api_key.startswith("sk-your"):
@@ -113,7 +116,10 @@ def _generate_openai(system_prompt: str, user_prompt: str) -> str:
 
 
 def _generate_anthropic(system_prompt: str, user_prompt: str) -> str:
-    import anthropic
+    try:
+        import anthropic  # type: ignore
+    except ImportError:
+        raise LLMError("The 'anthropic' package is not installed in your Python environment. Install it with 'pip install anthropic'.")
 
     api_key = os.getenv("ANTHROPIC_API_KEY")
     if not api_key or api_key.startswith("sk-ant-your"):
